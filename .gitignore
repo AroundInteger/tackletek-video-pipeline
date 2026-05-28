@@ -1,0 +1,21 @@
+# Local data (videos, previews, registry)
+data/
+*.db
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
+venv/
+
+# IDE / OS
+.DS_Store
+.idea/
+.vscode/
+
+# Test artefacts
+.pytest_cache/

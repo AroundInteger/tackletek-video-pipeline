@@ -1,0 +1,30 @@
+drive:
+  folder_id: "1-1z2Gjy-BdYGtrVdzXnYm2wnGH45myoD"
+  url: "https://drive.google.com/drive/folders/1-1z2Gjy-BdYGtrVdzXnYm2wnGH45myoD"
+
+paths:
+  incoming_dir: data/incoming
+  previews_dir: data/previews
+  registry_db: data/registry.db
+  events_log: data/events.jsonl
+
+ingest:
+  video_extensions:
+    - ".mp4"
+    - ".mov"
+    - ".ts.mp4"
+  stability_wait_s: 30
+  ignore_patterns:
+    - "*.jpg"
+    - "*.jpeg"
+    - "*.xlsx"
+    - "*.csv"
+    - "*.gsheet"
+
+# Phase 2+: TackleTek MATLAB analysis
+tackletek:
+  matlab_dir: "/Users/iMacPro/Library/CloudStorage/OneDrive-SwanseaUniversity/Research/TackleTek/1v1/matlab"
+  onevone_root: "/Users/iMacPro/Library/CloudStorage/OneDrive-SwanseaUniversity/Research/TackleTek/1v1"
+  dataset_name: "Blundells_GDrive"
+  skip_arena: true
+  fps: 30

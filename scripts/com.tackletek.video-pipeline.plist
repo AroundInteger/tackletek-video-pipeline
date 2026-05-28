@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.tackletek.video-pipeline</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>/Users/iMacPro/Library/CloudStorage/OneDrive-SwanseaUniversity/Research/tackletek-video-pipeline/scripts/run_scheduled.sh</string>
+  </array>
+  <key>StartInterval</key>
+  <integer>1800</integer>
+  <key>WorkingDirectory</key>
+  <string>/Users/iMacPro/Library/CloudStorage/OneDrive-SwanseaUniversity/Research/tackletek-video-pipeline</string>
+  <key>StandardOutPath</key>
+  <string>/Users/iMacPro/Library/CloudStorage/OneDrive-SwanseaUniversity/Research/tackletek-video-pipeline/data/launchd.stdout.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/iMacPro/Library/CloudStorage/OneDrive-SwanseaUniversity/Research/tackletek-video-pipeline/data/launchd.stderr.log</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/usr/local/bin:/usr/bin:/bin</string>
+    <key>TVP_PYTHON</key>
+    <string>/Users/iMacPro/Library/CloudStorage/OneDrive-SwanseaUniversity/Research/tackletek-video-pipeline/.venv/bin/python</string>
+  </dict>
+</dict>
+</plist>
