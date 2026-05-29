@@ -18,6 +18,7 @@ Phase 1 is complete when you can sync, ingest, open preview PNGs, and read `data
 
 ```bash
 cd tackletek-video-pipeline
+# Use Python 3.9+ if available (python3.11 -m venv .venv); 3.8 also works
 python3 -m venv .venv
 source .venv/bin/activate
 

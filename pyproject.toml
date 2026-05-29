@@ -7,7 +7,7 @@ name = "tackletek-video-pipeline"
 version = "0.1.0"
 description = "Google Drive video ingestion and TackleTek analysis orchestrator"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.8"
 dependencies = [
     "gdown>=5.0",
     "opencv-python>=4.8",
