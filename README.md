@@ -20,8 +20,20 @@ Phase 1 is complete when you can sync, ingest, open preview PNGs, and read `data
 cd tackletek-video-pipeline
 python3 -m venv .venv
 source .venv/bin/activate
+
+# Upgrade pip first (required on macOS system Python / old conda base)
+python -m pip install --upgrade pip setuptools wheel
 pip install -e ".[dev]"
 ```
+
+If editable install still fails on an old pip, use:
+
+```bash
+pip install -r requirements-dev.txt
+pip install .
+```
+
+Then run via `python -m pipeline.cli` or the `tvp` command.
 
 Edit [`config.yaml`](config.yaml) for your machine:
 
