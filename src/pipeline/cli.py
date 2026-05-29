@@ -4,7 +4,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from .config import ensure_data_dirs, load_config
+from .config import apply_cli_overrides, ensure_data_dirs, load_config
 from .events import EventLog
 from .ingest import ingest_videos
 from .process import process_videos
@@ -70,6 +70,18 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Path to config.yaml (default: repo root config.yaml)",
     )
+    parser.add_argument(
+        "--incoming-dir",
+        type=Path,
+        default=None,
+        help="Folder of videos to scan/ingest (overrides config paths.incoming_dir)",
+    )
+    parser.add_argument(
+        "--stability-wait-s",
+        type=int,
+        default=None,
+        help="Seconds to wait for file size stability before ingest (use 0 for local folders)",
+    )
 
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -95,6 +107,11 @@ def main(argv: list[str] | None = None) -> int:
 
     args = parser.parse_args(argv)
     cfg = load_config(args.config)
+    apply_cli_overrides(
+        cfg,
+        incoming_dir=args.incoming_dir,
+        stability_wait_s=args.stability_wait_s,
+    )
     ensure_data_dirs(cfg)
 
     if args.command == "sync":

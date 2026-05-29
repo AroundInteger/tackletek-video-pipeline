@@ -43,6 +43,23 @@ Edit [`config.yaml`](config.yaml) for your machine:
 
 ## Phase 1 — Ingestion MVP
 
+**Test with videos already on disk** (no Drive download):
+
+```bash
+python -m pipeline.cli scan \
+  --incoming-dir "/path/to/TackleTek/1v1/OutsideExamples/Test2_19022026"
+
+python -m pipeline.cli ingest \
+  --incoming-dir "/path/to/TackleTek/1v1/OutsideExamples/Test2_19022026" \
+  --stability-wait-s 0
+
+python -m pipeline.cli status
+```
+
+Use `--stability-wait-s 0` for local folders; keep the default (30) when files are still downloading from Drive.
+
+**From Google Drive:**
+
 ```bash
 # Download Drive folder to data/incoming/
 python -m pipeline.cli sync

@@ -103,3 +103,16 @@ def ensure_data_dirs(cfg: AppConfig) -> None:
     cfg.paths.previews_dir.mkdir(parents=True, exist_ok=True)
     cfg.paths.registry_db.parent.mkdir(parents=True, exist_ok=True)
     cfg.paths.events_log.parent.mkdir(parents=True, exist_ok=True)
+
+
+def apply_cli_overrides(
+    cfg: AppConfig,
+    *,
+    incoming_dir: Path | str | None = None,
+    stability_wait_s: int | None = None,
+) -> AppConfig:
+    if incoming_dir is not None:
+        cfg.paths.incoming_dir = Path(incoming_dir).expanduser().resolve()
+    if stability_wait_s is not None:
+        cfg.ingest.stability_wait_s = stability_wait_s
+    return cfg
