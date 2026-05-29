@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-import sys
 from pathlib import Path
 
 from .config import apply_cli_overrides, ensure_data_dirs, load_config
@@ -11,6 +10,34 @@ from .process import process_videos
 from .registry import Registry
 from .scanner import register_discovered_videos
 from .sync import sync_from_drive
+
+
+def _common_parser() -> argparse.ArgumentParser:
+    common = argparse.ArgumentParser(add_help=False)
+    common.add_argument(
+        "--incoming-dir",
+        type=Path,
+        default=None,
+        help="Folder of videos to scan/ingest (overrides config paths.incoming_dir)",
+    )
+    common.add_argument(
+        "--stability-wait-s",
+        type=int,
+        default=None,
+        help="Seconds to wait for file stability before ingest (use 0 for local folders)",
+    )
+    return common
+
+
+def _load_cfg(args: argparse.Namespace):
+    cfg = load_config(getattr(args, "config", None))
+    apply_cli_overrides(
+        cfg,
+        incoming_dir=getattr(args, "incoming_dir", None),
+        stability_wait_s=getattr(args, "stability_wait_s", None),
+    )
+    ensure_data_dirs(cfg)
+    return cfg
 
 
 def _print_status(cfg) -> int:
@@ -61,6 +88,7 @@ def _print_tail_log(cfg, n: int) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    common = _common_parser()
     parser = argparse.ArgumentParser(
         description="TackleTek video pipeline: sync, ingest, process, status",
     )
@@ -70,55 +98,62 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Path to config.yaml (default: repo root config.yaml)",
     )
-    parser.add_argument(
-        "--incoming-dir",
-        type=Path,
-        default=None,
-        help="Folder of videos to scan/ingest (overrides config paths.incoming_dir)",
-    )
-    parser.add_argument(
-        "--stability-wait-s",
-        type=int,
-        default=None,
-        help="Seconds to wait for file size stability before ingest (use 0 for local folders)",
-    )
 
     sub = parser.add_subparsers(dest="command", required=True)
 
     sync_p = sub.add_parser("sync", help="Download videos from Google Drive")
     sync_p.add_argument("--dry-run", action="store_true", help="Print gdown command only")
 
-    ingest_p = sub.add_parser("ingest", help="Extract frame 0 previews for new stable videos")
+    ingest_p = sub.add_parser(
+        "ingest",
+        parents=[common],
+        help="Extract frame 0 previews for new stable videos",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
     ingest_p.add_argument("--force", action="store_true", help="Re-ingest even if already ingested")
 
     process_p = sub.add_parser("process", help="Run TackleTek MATLAB analysis on ingested videos")
     process_p.add_argument("--limit", type=int, default=None, help="Max videos to process this run")
 
-    sub.add_parser("scan", help="Register discovered videos without ingesting")
+    sub.add_parser(
+        "scan",
+        parents=[common],
+        help="Register discovered videos without ingesting",
+    )
 
-    status_p = sub.add_parser("status", help="Show registry summary")
+    sub.add_parser(
+        "status",
+        parents=[common],
+        help="Show registry summary",
+    )
+
     tail_p = sub.add_parser("tail-log", help="Show recent event log entries")
     tail_p.add_argument("-n", type=int, default=20, help="Number of events to show")
 
-    run_all_p = sub.add_parser("run-all", help="sync + scan + ingest + process")
+    run_all_p = sub.add_parser(
+        "run-all",
+        parents=[common],
+        help="sync + scan + ingest + process",
+    )
     run_all_p.add_argument("--skip-sync", action="store_true")
     run_all_p.add_argument("--skip-process", action="store_true")
     run_all_p.add_argument("--limit", type=int, default=None)
 
     args = parser.parse_args(argv)
-    cfg = load_config(args.config)
-    apply_cli_overrides(
-        cfg,
-        incoming_dir=args.incoming_dir,
-        stability_wait_s=args.stability_wait_s,
-    )
-    ensure_data_dirs(cfg)
 
     if args.command == "sync":
+        cfg = _load_cfg(args)
         return sync_from_drive(cfg, dry_run=args.dry_run)
+
+    if args.command == "tail-log":
+        cfg = _load_cfg(args)
+        return _print_tail_log(cfg, args.n)
+
+    cfg = _load_cfg(args)
+
     if args.command == "scan":
         register_discovered_videos(cfg)
-        print("Scan complete.")
+        print(f"Scan complete ({cfg.paths.incoming_dir}).")
         return 0
     if args.command == "ingest":
         return ingest_videos(cfg, force=args.force)
@@ -126,8 +161,6 @@ def main(argv: list[str] | None = None) -> int:
         return process_videos(cfg, limit=args.limit)
     if args.command == "status":
         return _print_status(cfg)
-    if args.command == "tail-log":
-        return _print_tail_log(cfg, args.n)
     if args.command == "run-all":
         rc = 0
         if not args.skip_sync:

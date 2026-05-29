@@ -46,12 +46,9 @@ Edit [`config.yaml`](config.yaml) for your machine:
 **Test with videos already on disk** (no Drive download):
 
 ```bash
-python -m pipeline.cli scan \
-  --incoming-dir "/path/to/TackleTek/1v1/OutsideExamples/Test2_19022026"
+python -m pipeline.cli scan --incoming-dir "/path/to/TackleTek/1v1/OutsideExamples/Test2_19022026"
 
-python -m pipeline.cli ingest \
-  --incoming-dir "/path/to/TackleTek/1v1/OutsideExamples/Test2_19022026" \
-  --stability-wait-s 0
+python -m pipeline.cli ingest --incoming-dir "/path/to/TackleTek/1v1/OutsideExamples/Test2_19022026" --stability-wait-s 0
 
 python -m pipeline.cli status
 ```
